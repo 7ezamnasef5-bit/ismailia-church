@@ -33,15 +33,31 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label>اختر المرحلة الدراسية (مطلوب للمخدومين فقط):</label>
-                    <select id="user-stage">
-                        <option value="">-- اختر المرحلة --</option>
-                        <option value="ملايكة">ملايكة</option>
-                        <option value="ابتدائي">ابتدائي</option>
-                        <option value="إعدادي">إعدادي</option>
-                        <option value="ثانوي">ثانوي</option>
-                    </select>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>المرحلة الدراسية:</label>
+                        <select id="user-stage">
+                            <option value="">-- اختر المرحلة --</option>
+                            <option value="ملايكة">ملايكة</option>
+                            <option value="ابتدائي">ابتدائي</option>
+                            <option value="إعدادي">إعدادي</option>
+                            <option value="ثانوي">ثانوي</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>الصف الدراسي:</label>
+                        <select id="user-grade">
+                            <option value="">-- اختر الصف --</option>
+                            <option value="ملايكة">ملايكة</option>
+                            <option value="الأول">الأول (أولى)</option>
+                            <option value="الثاني">الثاني (ثانية)</option>
+                            <option value="الثالث">الثالث (ثالثة)</option>
+                            <option value="الرابع">الرابع (رابعة)</option>
+                            <option value="الخامس">الخامس (خامسة)</option>
+                            <option value="السادس">السادس (سادسة)</option>
+                        </select>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary">دخول</button>
@@ -60,7 +76,7 @@
                     <div class="info-item">العنوان بالتفصيل: <span id="p-address"></span></div>
                     <div class="info-item">رقم الهاتف: <span id="p-phone"></span></div>
                     <div class="info-item">تاريخ الميلاد: <span id="p-dob"></span> (<b id="p-age"></b> سنة)</div>
-                    <div class="info-item">المرحلة الدراسية: <span id="p-grade"></span></div>
+                    <div class="info-item">المرحلة والصف الدراسي: <span id="p-stage-grade"></span></div>
                 </div>
 
                 <div style="text-align: center; margin-top: 24px;">
@@ -119,19 +135,33 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>المرحلة الدراسية:</label>
-                                <select id="grade" required>
-                                    <option value="">-- اختر --</option>
+                                <select id="stage" required>
+                                    <option value="">-- اختر المرحلة --</option>
                                     <option value="ملايكة">ملايكة</option>
                                     <option value="ابتدائي">ابتدائي</option>
                                     <option value="إعدادي">إعدادي</option>
                                     <option value="ثانوي">ثانوي</option>
                                 </select>
                             </div>
-                            
+
                             <div class="form-group">
-                                <label>الموعد القادم:</label>
-                                <input type="datetime-local" id="next-session" required>
+                                <label>الصف الدراسي:</label>
+                                <select id="grade" required>
+                                    <option value="">-- اختر الصف --</option>
+                                    <option value="ملايكة">ملايكة</option>
+                                    <option value="الأول">الأول (أولى)</option>
+                                    <option value="الثاني">الثاني (ثانية)</option>
+                                    <option value="الثالث">الثالث (ثالثة)</option>
+                                    <option value="الرابع">الرابع (رابعة)</option>
+                                    <option value="الخامس">الخامس (خامسة)</option>
+                                    <option value="السادس">السادس (سادسة)</option>
+                                </select>
                             </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>الموعد القادم:</label>
+                            <input type="datetime-local" id="next-session" required>
                         </div>
 
                         <button type="submit" id="submit-btn" class="btn btn-save">حفظ البيانات</button>
@@ -149,7 +179,7 @@
                             <thead>
                                 <tr>
                                     <th>الاسم</th>
-                                    <th>المرحلة</th>
+                                    <th>الصف الدراسي</th>
                                     <th>الموعد القادم</th>
                                     <th>الإجراءات</th>
                                 </tr>
