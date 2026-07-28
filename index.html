@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الخدمة - كنائس الإسماعيلية</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <div id="login-section" class="card">
+            <div class="header-text">
+                <h1>نظام إدارة الخدمة والاجتماعات</h1>
+                <p>كنائس الإسماعيلية القبطية الارثوذوكسية</p>
+            </div>
+
+            <form onsubmit="handleUnifiedLogin(event)">
+                <div class="form-group">
+                    <label>أدخل الاسم الثلاثي (للمخدومين) أو كود الخادم:</label>
+                    <input type="text" id="user-input" placeholder="أكتب هنا اسمك الثلاثي أو كود الخادم" required>
+                </div>
+
+                <div class="form-group">
+                    <label>اختر الكنيسة (مطلوب للمخدومين فقط):</label>
+                    <select id="user-church">
+                        <option value="">-- اختر الكنيسة --</option>
+                        <option value="church_1">كنيسة السيدة العذراء مريم</option>
+                        <option value="church_2">كنيسة الأنبا بولا ومارمينا</option>
+                        <option value="church_3">كنيسة الشهيد العظيم مارجرجس</option>
+                        <option value="church_4">كنيسة الأنبا بيشوي</option>
+                        <option value="church_5">كنيسة الملاك ميخائيل</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">دخول</button>
+                <p id="login-error" class="error-msg"></p>
+            </form>
+        </div>
+
+        <div id="served-page" class="hidden">
+            <div class="profile-card">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <p style="color: #64748b; font-size: 0.95rem;" id="p-church-name"></p>
+                    <h2 id="p-name"></h2>
+                </div>
+
+                <div class="profile-info">
+                    <div class="info-item">العنوان بالتفصيل: <span id="p-address"></span></div>
+                    <div class="info-item">رقم الهاتف: <span id="p-phone"></span></div>
+                    <div class="info-item">تاريخ الميلاد: <span id="p-dob"></span> (<b id="p-age"></b> سنة)</div>
+                    <div class="info-item">الاجتماع / المرحله الدراسية: <span id="p-grade"></span></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 24px;">
+                    <div class="info-item" style="display:inline-block; background:#e0e7ff; border:none; padding: 16px 24px;">
+                        الموعد القادم للاجتماع: <span id="p-next" style="font-size: 1.2rem;"></span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; text-align: center;">
+                    <button onclick="backToLogin()" class="btn btn-primary" style="width: auto; padding: 10px 30px;">تسجيل خروج</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard-section" class="hidden">
+            <header class="dashboard-header">
+                <div>
+                    <h2 id="church-title" style="color: #1e293b;">لوحة التحكم</h2>
+                    <p id="servant-welcome" style="color: #64748b; font-size: 0.9rem;"></p>
+                </div>
+                <button onclick="logout()" class="btn btn-danger" style="padding: 8px 16px;">تسجيل الخروج</button>
+            </header>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3 id="form-title" style="margin-bottom: 16px; font-size: 1.1rem;">إضافة مخدوم جديد</h3>
+                    <form id="served-form" onsubmit="saveServedPerson(event)">
+                        <input type="hidden" id="edit-doc-id" value="">
+                        
+                        <div class="form-group">
+                            <label>الاسم الثلاثي:</label>
+                            <input type="text" id="fullname" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>رقم التليفون:</label>
+                            <input type="tel" id="phone" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>العنوان بالتفصيل:</label>
+                            <input type="text" id="address" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>تاريخ الميلاد:</label>
+                                <input type="date" id="dob" onchange="calculateAge()" required>
+                            </div>
+                            <div class="form-group">
+                                <label>العمر:</label>
+                                <input type="number" id="age" readonly placeholder="تلقائي">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>المرحلة الدراسية:</label>
+                                <input type="text" id="grade" required>
+                            </div>
+                            <div class="form-group">
+                                <label>الموعد القادم:</label>
+                                <input type="datetime-local" id="next-session" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submit-btn" class="btn btn-save">حفظ البيانات</button>
+                        <button type="button" id="cancel-btn" class="btn btn-warning hidden" onclick="resetForm()" style="width:100%; margin-top:8px;">إلغاء التعديل</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 16px; font-size: 1.1rem;">قائمة المخدومين</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>المرحلة</th>
+                                    <th>الموعد القادم</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="served-list">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
