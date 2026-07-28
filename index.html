@@ -12,7 +12,7 @@
         <div id="login-section" class="card">
             <div class="header-text">
                 <h1>نظام إدارة الخدمة والاجتماعات</h1>
-                <p>كنائس الإسماعيلية القبطية الارثوذوكسية</p>
+                <p>كنائس الإسماعيلية القبطية الأرثوذكسية</p>
             </div>
 
             <form onsubmit="handleUnifiedLogin(event)">
@@ -33,6 +33,17 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label>اختر المرحلة الدراسية (مطلوب للمخدومين فقط):</label>
+                    <select id="user-stage">
+                        <option value="">-- اختر المرحلة --</option>
+                        <option value="ملايكة">ملايكة</option>
+                        <option value="ابتدائي">ابتدائي</option>
+                        <option value="إعدادي">إعدادي</option>
+                        <option value="ثانوي">ثانوي</option>
+                    </select>
+                </div>
+
                 <button type="submit" class="btn btn-primary">دخول</button>
                 <p id="login-error" class="error-msg"></p>
             </form>
@@ -49,7 +60,7 @@
                     <div class="info-item">العنوان بالتفصيل: <span id="p-address"></span></div>
                     <div class="info-item">رقم الهاتف: <span id="p-phone"></span></div>
                     <div class="info-item">تاريخ الميلاد: <span id="p-dob"></span> (<b id="p-age"></b> سنة)</div>
-                    <div class="info-item">الاجتماع / المرحله الدراسية: <span id="p-grade"></span></div>
+                    <div class="info-item">المرحلة الدراسية: <span id="p-grade"></span></div>
                 </div>
 
                 <div style="text-align: center; margin-top: 24px;">
@@ -108,8 +119,15 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>المرحلة الدراسية:</label>
-                                <input type="text" id="grade" required>
+                                <select id="grade" required>
+                                    <option value="">-- اختر --</option>
+                                    <option value="ملايكة">ملايكة</option>
+                                    <option value="ابتدائي">ابتدائي</option>
+                                    <option value="إعدادي">إعدادي</option>
+                                    <option value="ثانوي">ثانوي</option>
+                                </select>
                             </div>
+                            
                             <div class="form-group">
                                 <label>الموعد القادم:</label>
                                 <input type="datetime-local" id="next-session" required>
@@ -122,8 +140,11 @@
                 </div>
 
                 <div class="card">
-                    <h3 style="margin-bottom: 16px; font-size: 1.1rem;">قائمة المخدومين</h3>
+                    <h3 style="margin-bottom: 16px; font-size: 1.1rem;" id="list-title">قائمة المخدومين</h3>
                     <div class="table-wrapper">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <input type="text" id="search-input" onkeyup="filterServedList()" placeholder="ابحث باسم المخدوم...">
+                        </div>
                         <table>
                             <thead>
                                 <tr>
@@ -134,7 +155,7 @@
                                 </tr>
                             </thead>
                             <tbody id="served-list">
-                                </tbody>
+                            </tbody>
                         </table>
                     </div>
                 </div>
