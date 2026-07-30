@@ -175,6 +175,10 @@
                         <div class="form-group" style="margin-bottom: 15px;">
                             <input type="text" id="search-input" onkeyup="filterServedList()" placeholder="ابحث باسم المخدوم...">
                         </div>
+                        <div class="export-btns">
+                            <button type="button" class="btn btn-excel" onclick="exportToExcel()">Excel</button>
+                            <button type="button" class="btn btn-pdf" onclick="exportToPDF()">PDF</button>
+                        </div>
                         <table>
                             <thead>
                                 <tr>
@@ -191,8 +195,11 @@
                 </div>
             </div>
         </div>
+
+        <div id="print-area" class="print-only"></div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script type="module" src="script.js"></script>
 </body>
 </html>
