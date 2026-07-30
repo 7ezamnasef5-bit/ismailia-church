@@ -52,6 +52,7 @@ const SERVANT_MAP = {
 let currentChurch = null;
 let currentStage = null;
 let unsubscribeRealtime = null;
+let currentServedList = []; // نسخة محدثة لحظياً من بيانات المخدومين المعروضة، تُستخدم في التصدير (Excel/PDF)
 
 // تحويل صيغة الوقت والتاريخ إلى نظام 12 ساعة (صباحاً/مساءً)
 function format12Hour(datetimeLocalValue) {
@@ -167,6 +168,8 @@ function listenToChurchDataRealtime() {
     
     unsubscribeRealtime = onSnapshot(q, (snapshot) => {
         tbody.innerHTML = "";
+        currentServedList = [];
+
         if (snapshot.empty) {
             tbody.innerHTML = `<tr><td colspan='4' style='text-align:center;'>لا يوجد مخدومين مضافين حالياً في مرحلة (${currentStage}).</td></tr>`;
             return;
@@ -175,6 +178,7 @@ function listenToChurchDataRealtime() {
         snapshot.forEach((docSnap) => {
             const person = docSnap.data();
             const id = docSnap.id;
+            currentServedList.push({ id, ...person });
             
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -286,10 +290,113 @@ window.logout = function() {
     if (unsubscribeRealtime) unsubscribeRealtime();
     currentChurch = null;
     currentStage = null;
+    currentServedList = [];
     document.getElementById('dashboard-section').classList.add('hidden');
     document.getElementById('login-section').classList.remove('hidden');
     document.getElementById('user-input').value = "";
     resetForm();
+};
+
+// جلب البيانات المطلوب تصديرها (تُراعي نص البحث الحالي إن وُجد)
+function getExportData() {
+    const searchInput = document.getElementById('search-input');
+    const filter = searchInput ? searchInput.value.trim().toLowerCase() : "";
+
+    if (!filter) return currentServedList;
+
+    return currentServedList.filter(person =>
+        (person.fullname || "").toLowerCase().indexOf(filter) > -1
+    );
+}
+
+// تصدير قائمة المخدومين إلى ملف Excel
+window.exportToExcel = function() {
+    const dataToExport = getExportData();
+
+    if (dataToExport.length === 0) {
+        alert("لا يوجد بيانات لتصديرها.");
+        return;
+    }
+
+    const excelRows = dataToExport.map((person, index) => ({
+        "م": index + 1,
+        "الاسم الثلاثي": person.fullname,
+        "رقم الهاتف": person.phone,
+        "العنوان بالتفصيل": person.address,
+        "تاريخ الميلاد": person.dob,
+        "العمر": person.age,
+        "المرحلة الدراسية": person.stage,
+        "الصف الدراسي": person.grade,
+        "الموعد القادم للاجتماع": format12Hour(person.nextSession)
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelRows);
+    worksheet['!cols'] = [
+        { wch: 5 }, { wch: 25 }, { wch: 15 }, { wch: 30 },
+        { wch: 14 }, { wch: 8 }, { wch: 14 }, { wch: 12 }, { wch: 28 }
+    ];
+    worksheet['!views'] = [{ rightToLeft: true }];
+
+    const workbook = XLSX.utils.book_new();
+    workbook.Workbook = { Views: [{ RTL: true }] };
+    XLSX.utils.book_append_sheet(workbook, worksheet, "قائمة المخدومين");
+
+    const fileName = `مخدومين_${currentChurch.name}_${currentStage}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+};
+
+// طباعة/تصدير قائمة المخدومين كـ PDF (باستخدام نافذة الطباعة، لدعم كامل للغة العربية)
+window.exportToPDF = function() {
+    const dataToExport = getExportData();
+
+    if (dataToExport.length === 0) {
+        alert("لا يوجد بيانات لتصديرها.");
+        return;
+    }
+
+    const printArea = document.getElementById('print-area');
+    const todayStr = new Date().toLocaleDateString('ar-EG');
+
+    let rowsHtml = "";
+    dataToExport.forEach((person, index) => {
+        rowsHtml += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${person.fullname}</td>
+                <td>${person.phone}</td>
+                <td>${person.address}</td>
+                <td>${person.dob} (${person.age} سنة)</td>
+                <td>${person.stage} - ${person.grade}</td>
+                <td>${format12Hour(person.nextSession)}</td>
+            </tr>
+        `;
+    });
+
+    printArea.innerHTML = `
+        <div class="print-header">
+            <h2>${currentChurch.name}</h2>
+            <p>قائمة مخدومين مرحلة (${currentStage})</p>
+            <p>تاريخ الطباعة: ${todayStr} | عدد المخدومين: ${dataToExport.length}</p>
+        </div>
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th>م</th>
+                    <th>الاسم الثلاثي</th>
+                    <th>رقم الهاتف</th>
+                    <th>العنوان</th>
+                    <th>تاريخ الميلاد</th>
+                    <th>المرحلة والصف</th>
+                    <th>الموعد القادم</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rowsHtml}
+            </tbody>
+        </table>
+    `;
+
+    window.print();
 };
 
 // تصفية وحس البحث باسم المخدوم في الجدول
